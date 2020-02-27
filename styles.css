@@ -1,0 +1,15 @@
+body {
+  background: #222;
+  margin: 0rem;
+  min-height: 100vh;
+  font-family: Futura, sans-serif;
+}
+#canvas {
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  -webkit-mask-image: radial-gradient(white, transparent 80%);
+  mask-image: radial-gradient(white, transparent 80%);
+}
