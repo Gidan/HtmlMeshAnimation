@@ -1,12 +1,12 @@
 const options = {
   lineStroke: "rgba(200,200,200, 1.0)",
-  vertexRows: 10,
-  vertexesPerRow: 15,
+  vertexSpacing: 80,
   defaultSpeed: 0.1,
   variantSpeed: 0.1
 };
 
-const vertexes = [];
+let vertexes = [];
+let initialized = false;
 
 let calcCanvasSize = function() {
   w = canvasBody.width = window.innerWidth;
@@ -28,8 +28,8 @@ let drawLine = function(point1, point2) {
 };
 
 let linkPoints = function(vertexes) {
-  for (let i = 0; i < options.vertexRows - 1; i++) {
-    for (let j = 0; j < options.vertexesPerRow - 1; j++) {
+  for (let i = 0; i < r - 1; i++) {
+    for (let j = 0; j < v - 1; j++) {
       const point = vertexes[i][j];
 
       const point1 = vertexes[i][j + 1];
@@ -47,10 +47,8 @@ Vertex = function(xPos, yPos) {
   //const rowOffset = w / opts.particlesPerRow / 2;
   const rowOffset = 0;
   this.initialX =
-    (xPos / (options.vertexesPerRow - 1)) * w +
-    (yPos % 2 == 0 ? 0 : rowOffset) +
-    Math.random() * 40;
-  this.initialY = (yPos / (options.vertexRows - 1)) * h + Math.random() * 40;
+    (xPos / (v - 1)) * w + (yPos % 2 == 0 ? 0 : rowOffset) + Math.random() * 40;
+  this.initialY = (yPos / (r - 1)) * h + Math.random() * 40;
   const offset = 10;
   this.maxX = this.initialX + offset;
   this.minX = this.initialX - offset;
@@ -71,7 +69,6 @@ Vertex = function(xPos, yPos) {
     this.clampPosition();
     this.x += this.vector.x;
     this.y += this.vector.y;
-    console.log(this.speed);
   };
 
   this.clampPosition = function() {
@@ -90,26 +87,32 @@ Vertex = function(xPos, yPos) {
 
 function init() {
   calcCanvasSize();
-  for (let i = 0; i < options.vertexRows; i++) {
+  vertexes = [];
+  r = h / options.vertexSpacing;
+  v = w / options.vertexSpacing;
+  for (let i = 0; i < r; i++) {
     const row = [];
-    for (let j = 0; j < options.vertexesPerRow; j++) {
+    for (let j = 0; j < v; j++) {
       row.push(new Vertex(j, i));
     }
     vertexes.push(row);
   }
-  window.requestAnimationFrame(loop);
+  if (!initialized) {
+    initialized = true;
+    window.requestAnimationFrame(loop);
+  }
 }
 
 function loop() {
-  window.requestAnimationFrame(loop);
   drawArea.clearRect(0, 0, w, h);
-  for (let i = 0; i < options.vertexRows; i++) {
-    for (let j = 0; j < options.vertexesPerRow; j++) {
+  for (let i = 0; i < r; i++) {
+    for (let j = 0; j < v; j++) {
       vertexes[i][j].update();
     }
   }
 
   linkPoints(vertexes);
+  window.requestAnimationFrame(loop);
 }
 
 const canvasBody = document.getElementById("canvas");
